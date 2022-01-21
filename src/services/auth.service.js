@@ -14,8 +14,6 @@ const loginService = (username, password) => {
     });
 };
 
-const logoutService = () => {
-  localStorage.removeItem("user");
-};
+const logoutService = () => localStorage.removeItem("user");
 
 export {loginService, logoutService};
