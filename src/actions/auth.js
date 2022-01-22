@@ -8,26 +8,32 @@ import {
 import { loginService, logoutService } from "../services/auth.service";
 
 
-export const login = (username, password) => (dispatch) => {
-  return loginService(username, password).then(
+export const login = (user, password) => (dispatch) => {
+  return loginService(user, password).then(
     (data) => {
+
+      console.log(data);
       dispatch({
         type: LOGIN_SUCCESS,
-        payload: { user: data },
+        payload: { user: data.data },
+      });
+      dispatch({
+        type: SET_MESSAGE,
+        payload: { status: data.status, message: data.message},
       });
 
       return Promise.resolve();
     },
     (error) => {
-      const message = error.message;
-
+      const message = error.response.data;
+      
       dispatch({
         type: LOGIN_FAIL,
       });
 
       dispatch({
         type: SET_MESSAGE,
-        payload: message,
+        payload: { status: message.status, message: message.message},
       });
 
       return Promise.reject();
@@ -41,4 +47,6 @@ export const logout = () => (dispatch) => {
   dispatch({
     type: LOGOUT,
   });
+
+  return Promise.resolve();
 };

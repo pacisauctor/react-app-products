@@ -1,15 +1,43 @@
 // @flow 
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { login } from '../actions/auth';
+import store from '../store';
+import { connect } from 'react-redux';
+import Swal from 'sweetalert2'
 
 
-const Login = () => {
+const Login = ({message}) => {
 
+    const [user, setUser] = useState('');
+    const [password, setPassword] = useState('');
     const onSubmitEvent =  (e)=>{
         console.log("formulario enviado");
+        store.dispatch(login(user, password)).then(()=>{
+            
+        }).catch(()=>{
+            
+        })
+
+
         e.preventDefault();
     }
 
+    useEffect(() => {
+        if(message){
+            Swal.fire({
+                title: message.message,
+                text: message.status,
+                icon: message.status >= 400 ? 'error': 'info',
+                confirmButtonText: 'Cool'
+              }).then(()=>{
+                  if(message.status === 200){
+                    window.location.href="/";
+                  }
+              })
+        }
+    }, [message]);
     return <>
         <Container>
             <Row>
@@ -17,8 +45,8 @@ const Login = () => {
                 <Col>
                     <Form onSubmit={onSubmitEvent}>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Username: </Form.Label>
-                        <Form.Control type="text" placeholder="user" />
+                        <Form.Label>User: </Form.Label>
+                        <Form.Control type="text" placeholder="user" value={user} onChange={(e) => setUser(e.target.value)} />
                         <Form.Text className="text-muted">
                         We'll never share your email with anyone else.
                         </Form.Text>
@@ -26,7 +54,7 @@ const Login = () => {
 
                     <Form.Group className="mb-3" controlId="formBasicPassword">
                         <Form.Label>Password</Form.Label>
-                        <Form.Control type="password" placeholder="Password" />
+                        <Form.Control type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
                     </Form.Group>
                     
                     <Button variant="primary" type="submit">
@@ -40,4 +68,12 @@ const Login = () => {
     </>;
 }
 
-export default Login;
+const mapStateToProps = (state) =>{
+    const { message }  = state.message;
+    return {
+        
+        message,
+    }
+}
+
+export default connect(mapStateToProps)(Login);
